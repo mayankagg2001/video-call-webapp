@@ -41,7 +41,7 @@ firebase.auth().onAuthStateChanged((user) => {
         }
         else {
           alert("No such meeting exist");
-          window.location.href = "http://localhost:3000"
+          window.location.href = "https://video-app-clone.herokuapp.com/"
         }
       }
     )
@@ -53,7 +53,7 @@ firebase.auth().onAuthStateChanged((user) => {
   else {
     console.log("not signed in")
     alert("Please sign in to continue")
-    window.location.href = "http://localhost:3000/";
+    window.location.href = "https://video-app-clone.herokuapp.com/";
   }
 })
 
