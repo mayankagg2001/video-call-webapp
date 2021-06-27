@@ -2,12 +2,12 @@ import userobjectinfo from "./userObject.js"
 
 
 var firebaseConfig = {
-  apiKey: "AIzaSyB1Dcbxh_ERRibO87DChqZIpJYD-2mHdlA",
-  authDomain: "video-call-app-b2276.firebaseapp.com",
-  projectId: "video-call-app-b2276",
-  storageBucket: "video-call-app-b2276.appspot.com",
-  messagingSenderId: "449233312883",
-  appId: "1:449233312883:web:a90579bb6dac30d1dc1e06"
+  apiKey: "AIzaSyDamobTihmwkpxxCVSb59-yUOMwpkiEoNI",
+  authDomain: "video-call-app-copy.firebaseapp.com",
+  projectId: "video-call-app-copy",
+  storageBucket: "video-call-app-copy.appspot.com",
+  messagingSenderId: "474784328760",
+  appId: "1:474784328760:web:f7584e4973e0634b57cacd"
 };
 
 
