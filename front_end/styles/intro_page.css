@@ -1,0 +1,88 @@
+.hidden{
+    display: none;
+}
+
+
+
+#root{
+    /* background-color: skyblue; */
+}
+#title{
+    font-size: 30px;
+    text-align: center;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    margin-bottom: 10px;
+    padding: 15px 20px 15px;
+    /* position: fixed; */
+    /* display: inline-block; */
+    display: flex;
+    justify-content: space-between;
+}
+
+#signupblock{
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    padding: 5px;
+    justify-content: space-between;
+    min-width: 150px;
+}
+
+#signout{
+    display: none;
+}
+
+.profilephoto{
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    background-size: contain;
+}
+
+#meeting{
+    display: flex;
+    /* flex-grow: 1; */
+    margin: 20px;
+    height: 40vh;
+    justify-content: center;
+    align-items: flex-end;
+    width: 60%;
+    margin: auto;
+    padding-bottom: 10px ;
+}
+
+.join-meeting-button{
+    margin-left: 4px;
+}
+
+.join-meeting-code{
+margin-left: 20px;
+height: 40px;
+border-radius: 4px;
+text-align: center;
+}
+
+
+.join-meeting{
+    display: flex;
+}
+
+#new-meeting-id{
+    font-size: 18px;
+    text-align: center;
+}
+
+#new-meeting-info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#NotSignedIn{
+    text-align: center;
+    font-size: 14px;
+    color: rgb(212, 76, 76);
+}

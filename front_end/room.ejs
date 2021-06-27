@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/room.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- <script src="/userObject.js"></script> -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+
+    <!-- <script src = "/auth1.js"></script> -->
+
+    <style>
+        .hide {
+            display: none;
+        }
+
+        #video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 300px);
+            grid-auto-rows: 300px;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: black;
+        }
+    </style>
+
+    <script>
+        const meetingId = "<%= meetingId %>"
+    </script>
+
+
+    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
+
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script type="module" src="/script2.js" defer></script>
+
+
+
+
+
+</head>
+
+<body>
+    <div class="hide" id="main__page">
+        <div class="main_app">
+            <div class="main_app_left">
+                <div id="main_app_left_videos">
+                    <div id="video-grid"></div>
+                </div>
+                <div id="main_app_left_controls">
+
+                    <div id="audiodiv">
+                        <button id="audio">
+                            <span class="material-icons">mic</span>
+                        </button>
+                    </div>
+                    <div id="videodiv">
+                        <button id="video">
+                            <span class="material-icons">videocam</span>
+                        </button>
+                    </div>
+                    <div id="mutealldiv">
+                        <button id="muteall">mute all</button>
+                    </div>
+                    <div id="closevideoalldiv">
+                        <button id="closevideoall">close video</button>
+                    </div>
+                    <div id="chatmessagediv">
+                        <span class="material-icons">chat</span>
+                    </div>
+                </div>
+                
+           
+            </div>
+            <div class="main_app_right" id="main_app_right">
+
+                <div id="chat_heading">
+                    <div id="chatmessages" class="shaded">
+                        <span class="material-icons">chat</span>
+                        <span>Chat</span>
+                    </div>
+                    <div id="participants">
+                        <span class="material-icons">people</span>
+                        <span>Participants</span>
+                    </div>
+                </div>
+                <div id="middleblock">
+                    <div id="messages">
+
+                    </div>
+                    <div id="participantlist" class="hide"></div>
+                </div>
+                <form id="input" autocomplete="off">
+                    <input placeholder="Type a message" id="messagetext"></input>
+                    <button type="submit" id="messagebtn">Send</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
