@@ -39,8 +39,8 @@ app.get('/join/:room',(req,res)=>{
 //     // res.send(uuidV4())
 // })
 
-
-server.listen(3000)
+var PORT = process.env.PORT || 3000
+server.listen(PORT)
 
 // let name = prompt("Enter your display name")
 
