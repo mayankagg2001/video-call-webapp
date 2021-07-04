@@ -49,7 +49,7 @@ let userlist = [];
 io.on("connection",(socket)=>{
     socket.on("join-meeting",(meetingId,userId,name,profilephoto,uid)=>{
         socket.join(meetingId)
-        console.log(meetingId,userId)
+        // console.log(meetingId,userId)
         userlist.push({
             name:name,
             id:userId,

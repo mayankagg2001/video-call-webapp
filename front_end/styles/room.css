@@ -17,6 +17,9 @@ height: 100vh;
 #main_app_left_videos{
     flex: 0.9;
     background-color: black;
+    padding: 8px;
+    overflow-y: auto; 
+    overflow-x: auto;
     /* display: flex;
     justify-content: center;
     align-items: center; */
@@ -27,9 +30,38 @@ height: 100vh;
 }
 
 
+.hide {
+    display: none;
+}
 
+#video-grid {
+    display: grid;
+    height: 100%;
+    width: 100%;
+    grid-template-columns: repeat(3,minmax(300px,1fr));
+    grid-auto-rows: 210px;
+    grid-column-gap:5px;
+    grid-row-gap:5px;
+   
+  
+}
 
+video {
+    /* width: auto; */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: white;
+    justify-self: center;
+    align-self: center;
+}
 
+.large-video{
+    grid-row-start: 1;
+    grid-row-end: 4;
+    grid-column-start:1 ;
+    grid-column-end:4 ;
+}
 
 
 
@@ -56,6 +88,8 @@ height: 100vh;
     height: 40px;
     width: 40px;
     background-size: contain;
+    border: 2px black solid;
+
 }
 
 /* #messages{
@@ -94,6 +128,15 @@ height: 100vh;
 
 }
 
+
+div#participants:hover{
+    background-color: rgba(189, 187, 187, 0.8);
+}
+
+div#chatmessages:hover{
+    background-color: rgba(189, 187, 187, 0.8);
+}
+
 #participants *{
     padding: 4px 8px 4px;
 }
@@ -106,22 +149,27 @@ height: 100vh;
     align-items: center;
 }
 
-#audiodiv,#videodiv,#mutealldiv,#closevideoalldiv,#chatmessagediv{
+#audiodiv,#videodiv,#mutealldiv,#closevideoalldiv,#chatmessagediv,#endcalldiv,#presentscreendiv{
     padding: 10px;
 }
 
-#audio,#video,#muteall,#closevideoall{
+#audio,#video,#muteall,#closevideoall,#endcall,#presentscreendiv{
     outline: none;
+    
 }
 
-#audio , #video{
+#audio , #video , #endcall{
     border-radius: 50%;
+    color: black;
+    background-color: rgba(218, 221, 227,0.4);
+    border: none;
 }
 
-#chatmessagediv{
+#chatmessagediv,#presentscreendiv{
     font-size: 25px;
     margin-left: 50px;
     cursor: pointer;
+    padding-top: 19px
 }
 
 #single-participant{

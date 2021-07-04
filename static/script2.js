@@ -11,6 +11,8 @@ var firebaseConfig = {
 };
 
 
+const base_url = "https://video-app-clone.herokuapp.com/";
+
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore()
 
@@ -24,7 +26,7 @@ let admin = false
 let adminuid
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    // console.log(userobjectinfo(user))
+    console.log(userobjectinfo(user))
     let userobj = userobjectinfo(user)
     name = userobj.name
     email = userobj.email
@@ -33,19 +35,19 @@ firebase.auth().onAuthStateChanged((user) => {
     db.collection('rooms').doc(meetingId).get().then(
       (result) => {
         if (result.exists) {
-          // console.log("exist")
+          console.log("exist")
           document.getElementById("main__page").classList.remove("hide")
-          if(result.data().adminuid == uid) admin = true
           adminuid = result.data().adminuid
-
+          if (adminuid == uid) admin = true
+          console.log(admin)
+          superfunction()
         }
         else {
           alert("No such meeting exist");
-          window.location.href = "https://video-app-clone.herokuapp.com/"
+          window.location.href = base_url;
         }
       }
     )
-    superfunction()
     // var q = roomref.where("meetingid","==",meetingId)
     // console.log(roomref);
 
@@ -53,7 +55,7 @@ firebase.auth().onAuthStateChanged((user) => {
   else {
     console.log("not signed in")
     alert("Please sign in to continue")
-    window.location.href = "https://video-app-clone.herokuapp.com/";
+    window.location.href = base_url;
   }
 })
 
@@ -80,8 +82,8 @@ firebase.auth().onAuthStateChanged((user) => {
 
 
 function superfunction() {
-  
-  
+
+
   const socket = io('/')
   const videoGrid = document.getElementById('video-grid')
   const myPeer = new Peer(undefined, {
@@ -95,6 +97,7 @@ function superfunction() {
   let videostream;
   const myvideo = document.createElement('video')
   myvideo.muted = true
+  addeventtoenlargevideo(myvideo)
   let connectedpeers = {}
   let peerstreams = {}
 
@@ -108,6 +111,7 @@ function superfunction() {
     myPeer.on("call", call => {
       call.answer(stream);
       const video = document.createElement('video')
+      addeventtoenlargevideo(video)
       call.on("stream", userstream => {
         addvideo(video, userstream)
         peerstreams[call.peer] = userstream
@@ -117,7 +121,7 @@ function superfunction() {
         video.remove();
       })
     })
-    socket.on('user-connected', (userId, name,profilephoto ,userlist) => {
+    socket.on('user-connected', (userId, name, profilephoto, userlist) => {
 
       // console.log("connecting to ", name);
       // console.log(name," joined the meeting")
@@ -132,7 +136,7 @@ function superfunction() {
 
 
 
-  socket.on('user-disconnected', (userId, name,profilephoto,userlist) => {
+  socket.on('user-disconnected', (userId, name, profilephoto, userlist) => {
     // console.log("user disconnected ", userId)
     // console.log(name, " left the meeting")
     constructparticipantlist(userlist)
@@ -153,37 +157,54 @@ function superfunction() {
     //     profilephoto:profilephoto
     //   })
     // })
-    socket.emit('join-meeting', meetingId, id, name,profilephoto,uid)
+    socket.emit('join-meeting', meetingId, id, name, profilephoto, uid)
   })
 
-// socket.on("disconnect-yourself",function(){
-//       db.collection('rooms').doc(meetingId).update({
-//       participants:firebase.firestore.FieldValue.arrayRemove({
-//         name:name,
-//         userid:myPeer.id,
-//         profilephoto:profilephoto
-//       })
-//     })
-//   }
-//   )
+  // socket.on("disconnect-yourself",function(){
+  //       db.collection('rooms').doc(meetingId).update({
+  //       participants:firebase.firestore.FieldValue.arrayRemove({
+  //         name:name,
+  //         userid:myPeer.id,
+  //         profilephoto:profilephoto
+  //       })
+  //     })
+  //   }
+  //   )
 
-  socket.on("You-are-connected",userlist=>{
+  socket.on("You-are-connected", userlist => {
     constructparticipantlist(userlist)
     // console.log(userlist);
   })
 
+
+  function addeventtoenlargevideo(video)
+  {
+    video.addEventListener('click',()=>{
+      video.classList.toggle('large-video')
+      const videos = document.getElementsByTagName('video');
+      for(let i=0;i<videos.length;i++) 
+        {     console.log(videos[i])
+              if(videos[i]==video) continue
+          videos[i].classList.remove('large-video')
+        }
+        })
+  }
+
   function addvideo(video, stream) {
-    openvideo(stream)
+
     video.srcObject = stream
     video.addEventListener("loadedmetadata", () => {
       video.play()
     })
+    
     videoGrid.append(video)
   }
 
   function connecttouser(userId, stream) {
     const call = myPeer.call(userId, stream)
     const video = document.createElement('video')
+    addeventtoenlargevideo(video)
+    
     call.on('stream', (userstream) => {
       addvideo(video, userstream)
       peerstreams[userId] = userstream
@@ -205,47 +226,47 @@ function superfunction() {
 
   videobtn.addEventListener("click", () => {
     let on = videostream.getVideoTracks()[0].enabled;
-    if (on)
-      {
-        closevideo(videostream)
-        document.getElementById("video").innerHTML = '<span class="material-icons">videocam_off</span>'
-      }
-    else
-      {
-        openvideo(videostream)
-        document.getElementById("video").innerHTML = '<span class="material-icons">videocam</span>'
-      }
+    if (on) {
+      closevideo(videostream)
+      document.getElementById("video").innerHTML = '<span class="material-icons">videocam_off</span>'
+    }
+    else {
+      openvideo(videostream)
+      document.getElementById("video").innerHTML = '<span class="material-icons">videocam</span>'
+    }
   })
 
   audiobtn.addEventListener("click", () => {
     let on = videostream.getAudioTracks()[0].enabled;
-    if (on)
-      {
-        mute(videostream)
-        document.getElementById("audio").innerHTML = '<span class="material-icons">mic_off</span>'
-      }
-    else
-      {
-        unmute(videostream)
-        document.getElementById("audio").innerHTML = '<span class="material-icons">mic</span>'
-      }
+    if (on) {
+      mute(videostream)
+      document.getElementById("audio").innerHTML = '<span class="material-icons">mic_off</span>'
+    }
+    else {
+      unmute(videostream)
+      document.getElementById("audio").innerHTML = '<span class="material-icons">mic</span>'
+    }
 
   })
 
-  if(!admin)
-  {
+  document.getElementById("endcall").addEventListener("click", () => {
+    // socket.emit("disconnect");
+    window.location.href = base_url;
+  })
+
+  if (admin == false) {
+    console.log("admin is false")
     document.getElementById("mutealldiv").style.display = "none"
     document.getElementById("closevideoalldiv").style.display = "none"
   }
-  else
-  {
-  muteallbtn.addEventListener("click", () => {
-    socket.emit("mute-all")
-  })
+  else {
+    muteallbtn.addEventListener("click", () => {
+      socket.emit("mute-all")
+    })
 
-  videoff.addEventListener("click", () => {
-    socket.emit("video-off-all")
-  })
+    videoff.addEventListener("click", () => {
+      socket.emit("video-off-all")
+    })
 
   }
   function mute(video) {
@@ -297,10 +318,14 @@ function superfunction() {
 
   socket.on("mute-yourself", () => {
     mute(videostream)
+    document.getElementById("audio").innerHTML = '<span class="material-icons">mic_off</span>'
+
   })
 
   socket.on("off-video", () => {
     closevideo(videostream)
+    document.getElementById("video").innerHTML = '<span class="material-icons">videocam_off</span>'
+
   })
 
   function addChat(name, message) {
@@ -319,47 +344,45 @@ function superfunction() {
     document.getElementById("messages").append(chatele)
   }
 
-const participantbutton = document.getElementById("participants")
-const participantlist = document.getElementById("participantlist")
-const chatmessagesbutton = document.getElementById("chatmessages")
-participantbutton.addEventListener("click",()=>{
-participantlist.classList.remove("hide")
-document.getElementById("messages").classList.add("hide")
-participantbutton.classList.add("shaded")
-chatmessagesbutton.classList.remove("shaded")
-})
+  const participantbutton = document.getElementById("participants")
+  const participantlist = document.getElementById("participantlist")
+  const chatmessagesbutton = document.getElementById("chatmessages")
+  participantbutton.addEventListener("click", () => {
+    participantlist.classList.remove("hide")
+    document.getElementById("messages").classList.add("hide")
+    participantbutton.classList.add("shaded")
+    chatmessagesbutton.classList.remove("shaded")
+  })
 
 
-chatmessagesbutton.addEventListener("click",()=>{
-  document.getElementById("messages").classList.remove("hide")
-  participantlist.classList.add("hide")
-  participantbutton.classList.remove("shaded")
-chatmessagesbutton.classList.add("shaded")
-})
+  chatmessagesbutton.addEventListener("click", () => {
+    document.getElementById("messages").classList.remove("hide")
+    participantlist.classList.add("hide")
+    participantbutton.classList.remove("shaded")
+    chatmessagesbutton.classList.add("shaded")
+  })
 
 
 }
 
 
-function constructparticipantlist(userinfo)
-{ console.log(userinfo)
+function constructparticipantlist(userinfo) { //console.log(userinfo)
   const participantlist = document.getElementById("participantlist");
   participantlist.innerHTML = "";
-  for(let i=0;i<userinfo.length;i++)
-  {
+  for (let i = 0; i < userinfo.length; i++) {
     const namediv = document.createElement('div');
     const photodiv = document.createElement('div');
-    if(adminuid==userinfo[i].uid)
-    namediv.innerHTML = userinfo[i].name + "<span>(admin)</span>"
+    if (adminuid == userinfo[i].uid)
+      namediv.innerHTML = userinfo[i].name + "<span>(admin)</span>"
     else
-    namediv.innerHTML = userinfo[i].name
-    
+      namediv.innerHTML = userinfo[i].name
+
     photodiv.style.backgroundImage = `url(${userinfo[i].profilephotourl})`
     photodiv.classList.add("profilephoto")
     const participant = document.createElement('div')
     participant.append(photodiv)
     participant.append(namediv)
-    participant.setAttribute('id','single-participant')
+    participant.setAttribute('id', 'single-participant')
     participantlist.append(participant)
   }
 }
@@ -369,6 +392,7 @@ function constructparticipantlist(userinfo)
 //   console.log(doc.data().participants)
 // })
 const chatmessageswitch = document.getElementById("chatmessagediv")
-chatmessageswitch.addEventListener("click",()=>{
+chatmessageswitch.addEventListener("click", () => {
   document.getElementById("main_app_right").classList.toggle("hide")
 })
+
