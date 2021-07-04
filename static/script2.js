@@ -11,7 +11,7 @@ var firebaseConfig = {
 };
 
 
-const base_url = "https://video-app-clone.herokuapp.com/";
+const base_url = "http://localhost:3000/";
 
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore()
@@ -125,7 +125,7 @@ function superfunction() {
 
       console.log("connecting to ", name);
       constructparticipantlist(userlist)
-      setTimeout(() => { connecttouser(userId, stream) }, 500)
+      setTimeout(() => { connecttouser(userId, stream) }, 1000)
     })
 
 
@@ -201,8 +201,9 @@ function superfunction() {
     const call = myPeer.call(userId, stream)
     const video = document.createElement('video')
     addeventtoenlargevideo(video)
-
+    console.log(userId)
     call.on('stream', (userstream) => {
+      console.log("here")
       addvideo(video, userstream)
       // console.log(userstream)
       peerstreams[userId] = userstream
@@ -407,20 +408,23 @@ function superfunction() {
   
 
 
-  navigator.mediaDevices.getDisplayMedia().then(stream=>{
-    console.log(stream)
+  navigator.mediaDevices.getDisplayMedia({video:true}).then(stream=>{
+    // console.log(stream)
+    let video1 = document.createElement('video')
+    addeventtoenlargevideo(video1)
+    addvideo(video1,stream);
     mynewPeer.on("call",call=>{
-      // console.log(stream)
+      console.log("called")
+      console.log(stream)
       call.answer(stream);
     })
   }).catch(err=>{console.log(err)})
 
 
-  mynewPeer.on("open",id=>{
-    let presentationname = `${name} (Presentation)`;
-    socket.emit('join-meeting', meetingId, id, presentationname, profilephoto, uid)
+  
+    mynewPeer.on("open",()=>{socket.emit('join-meeting', meetingId, mynewPeer.id, `${name} (Presentation)`, profilephoto, 100)})
 
-  })
+
 
 
 
