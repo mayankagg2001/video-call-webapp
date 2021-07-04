@@ -21,6 +21,6 @@ var firebaseConfig = {
     {     
         console.log("not signed in")
         alert("Please sign in to continue")
-        window.location.href = "http://localhost:3000/";
+        window.location.href = "https://video-app-clone.herokuapp.com/";
     }
 })
