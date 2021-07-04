@@ -123,10 +123,8 @@ function superfunction() {
     })
     socket.on('user-connected', (userId, name, profilephoto, userlist) => {
 
-      // console.log("connecting to ", name);
-      // console.log(name," joined the meeting")
+      console.log("connecting to ", name);
       constructparticipantlist(userlist)
-      // console.log(userlist)
       setTimeout(() => { connecttouser(userId, stream) }, 500)
     })
 
@@ -177,17 +175,16 @@ function superfunction() {
   })
 
 
-  function addeventtoenlargevideo(video)
-  {
-    video.addEventListener('click',()=>{
+  function addeventtoenlargevideo(video) {
+    video.addEventListener('click', () => {
       video.classList.toggle('large-video')
       const videos = document.getElementsByTagName('video');
-      for(let i=0;i<videos.length;i++) 
-        {     console.log(videos[i])
-              if(videos[i]==video) continue
-          videos[i].classList.remove('large-video')
-        }
-        })
+      for (let i = 0; i < videos.length; i++) {
+        console.log(videos[i])
+        if (videos[i] == video) continue
+        videos[i].classList.remove('large-video')
+      }
+    })
   }
 
   function addvideo(video, stream) {
@@ -196,7 +193,7 @@ function superfunction() {
     video.addEventListener("loadedmetadata", () => {
       video.play()
     })
-    
+
     videoGrid.append(video)
   }
 
@@ -204,9 +201,10 @@ function superfunction() {
     const call = myPeer.call(userId, stream)
     const video = document.createElement('video')
     addeventtoenlargevideo(video)
-    
+
     call.on('stream', (userstream) => {
       addvideo(video, userstream)
+      // console.log(userstream)
       peerstreams[userId] = userstream
 
     })
@@ -363,36 +361,71 @@ function superfunction() {
   })
 
 
-}
 
 
-function constructparticipantlist(userinfo) { //console.log(userinfo)
-  const participantlist = document.getElementById("participantlist");
-  participantlist.innerHTML = "";
-  for (let i = 0; i < userinfo.length; i++) {
-    const namediv = document.createElement('div');
-    const photodiv = document.createElement('div');
-    if (adminuid == userinfo[i].uid)
-      namediv.innerHTML = userinfo[i].name + "<span>(admin)</span>"
-    else
-      namediv.innerHTML = userinfo[i].name
 
-    photodiv.style.backgroundImage = `url(${userinfo[i].profilephotourl})`
-    photodiv.classList.add("profilephoto")
-    const participant = document.createElement('div')
-    participant.append(photodiv)
-    participant.append(namediv)
-    participant.setAttribute('id', 'single-participant')
-    participantlist.append(participant)
+  function constructparticipantlist(userinfo) { //console.log(userinfo)
+    const participantlist = document.getElementById("participantlist");
+    participantlist.innerHTML = "";
+    for (let i = 0; i < userinfo.length; i++) {
+      const namediv = document.createElement('div');
+      const photodiv = document.createElement('div');
+      if (adminuid == userinfo[i].uid)
+        namediv.innerHTML = userinfo[i].name + "<span>(admin)</span>"
+      else
+        namediv.innerHTML = userinfo[i].name
+
+      photodiv.style.backgroundImage = `url(${userinfo[i].profilephotourl})`
+      photodiv.classList.add("profilephoto")
+      const participant = document.createElement('div')
+      participant.append(photodiv)
+      participant.append(namediv)
+      participant.setAttribute('id', 'single-participant')
+      participantlist.append(participant)
+    }
   }
+
+  // db.collection('rooms').doc(meetingId).onSnapshot(doc=>{
+  //   constructparticipantlist(doc.data().participants)
+  //   console.log(doc.data().participants)
+  // })
+  const chatmessageswitch = document.getElementById("chatmessagediv")
+  chatmessageswitch.addEventListener("click", () => {
+    document.getElementById("main_app_right").classList.toggle("hide")
+  })
+
+  const presentscreen = document.getElementById('presentscreendiv');
+  presentscreendiv.addEventListener("click", presentscreenfunc);
+
+  function presentscreenfunc() {
+
+    const mynewPeer = new Peer(undefined, {
+      host: 'peerjs-videoclone.herokuapp.com',
+      secure: true,
+      port: '443'
+    })
+  
+
+
+  navigator.mediaDevices.getDisplayMedia().then(stream=>{
+    console.log(stream)
+    mynewPeer.on("call",call=>{
+      // console.log(stream)
+      call.answer(stream);
+    })
+  }).catch(err=>{console.log(err)})
+
+
+  mynewPeer.on("open",id=>{
+    let presentationname = `${name} (Presentation)`;
+    socket.emit('join-meeting', meetingId, id, presentationname, profilephoto, uid)
+
+  })
+
+
+
+
+
 }
 
-// db.collection('rooms').doc(meetingId).onSnapshot(doc=>{
-//   constructparticipantlist(doc.data().participants)
-//   console.log(doc.data().participants)
-// })
-const chatmessageswitch = document.getElementById("chatmessagediv")
-chatmessageswitch.addEventListener("click", () => {
-  document.getElementById("main_app_right").classList.toggle("hide")
-})
-
+}
