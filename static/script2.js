@@ -400,6 +400,7 @@ function superfunction() {
 
       photodiv.style.backgroundImage = `url(${userinfo[i].profilephotourl})`
       photodiv.classList.add("profilephoto")
+      photodiv.style.borderColor = "white"
       const participant = document.createElement('div')
       participant.append(photodiv)
       participant.append(namediv)

@@ -19,7 +19,7 @@ height: 100vh;
 
 #main_app_left_videos{
     flex: 0.9;
-    background-color: black;
+    background-color: rgba(59, 60, 61,1);
     padding: 8px;
     overflow-y: auto; 
     overflow-x: auto;
@@ -98,8 +98,10 @@ video {
     width: 40px;
     background-size: contain;
     border: 2px black solid;
-
+    
 }
+
+
 
 /* #messages{
     flex: 0.8;
