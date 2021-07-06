@@ -95,25 +95,26 @@ function superfunction() {
 
 
   let videostream;
-  const myvideo = document.createElement('video')
-  myvideo.muted = true
+  let presenting = false;
+  const myvideo = document.createElement('div')
+  // myvideo.muted = true
   addeventtoenlargevideo(myvideo)
   let connectedpeers = {}
   let peerstreams = {}
-
+  let peeridname = {}
 
   navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true,
   }).then(stream => {
-    addvideo(myvideo, stream)
+    addvideo(myvideo, stream,"You",true)
     videostream = stream
     myPeer.on("call", call => {
       call.answer(stream);
-      const video = document.createElement('video')
+      const video = document.createElement('div')
       addeventtoenlargevideo(video)
       call.on("stream", userstream => {
-        addvideo(video, userstream)
+        addvideo(video, userstream,peeridname[call.peer])
         peerstreams[call.peer] = userstream
       })
       connectedpeers[call.peer] = call
@@ -125,7 +126,7 @@ function superfunction() {
 
       console.log("connecting to ", name);
       constructparticipantlist(userlist)
-      setTimeout(() => { connecttouser(userId, stream) }, 1000)
+      setTimeout(() => { connecttouser(userId, stream,name) }, 500)
     })
 
 
@@ -178,7 +179,7 @@ function superfunction() {
   function addeventtoenlargevideo(video) {
     video.addEventListener('click', () => {
       video.classList.toggle('large-video')
-      const videos = document.getElementsByTagName('video');
+      const videos = document.getElementsByClassName('uservideosdiv');
       for (let i = 0; i < videos.length; i++) {
         console.log(videos[i])
         if (videos[i] == video) continue
@@ -187,28 +188,41 @@ function superfunction() {
     })
   }
 
-  function addvideo(video, stream) {
-
-    video.srcObject = stream
-    video.addEventListener("loadedmetadata", () => {
-      video.play()
+  function addvideo(video, stream,name,mute=false) {
+    let video1 = document.createElement('video')
+    video1.srcObject = stream
+    const nameobject = document.createElement('div');
+    nameobject.innerHTML = `<h6>${name}</h6>`
+    nameobject.setAttribute("class","videoname")
+    video1.muted = mute
+    video.innerHTML = ""
+    video1.addEventListener("loadedmetadata", () => {
+      video1.play()
     })
-
+    video.append(video1)
+    video.append(nameobject)
+    // const gridcell = document.createElement('div');
+    // gridcell.append(video)
+    // gridcell.append(nameobject)
+    video.setAttribute("class","uservideosdiv")
     videoGrid.append(video)
   }
 
-  function connecttouser(userId, stream) {
+  function connecttouser(userId, stream,name) {
     const call = myPeer.call(userId, stream)
-    const video = document.createElement('video')
+    const video = document.createElement('div')
     addeventtoenlargevideo(video)
     console.log(userId)
     call.on('stream', (userstream) => {
       console.log("here")
-      addvideo(video, userstream)
+      addvideo(video, userstream,name)
       // console.log(userstream)
       peerstreams[userId] = userstream
 
     })
+    if (presenting) {
+      changetopresenatation();
+    }
     call.on('close', () => {
       video.remove()
     })
@@ -366,6 +380,14 @@ function superfunction() {
 
 
   function constructparticipantlist(userinfo) { //console.log(userinfo)
+
+    peeridname = {}
+
+    for(let i=0;i<userinfo.length;i++)
+    {
+      peeridname[userinfo[i].id] = userinfo[i].name
+    }
+
     const participantlist = document.getElementById("participantlist");
     participantlist.innerHTML = "";
     for (let i = 0; i < userinfo.length; i++) {
@@ -396,40 +418,100 @@ function superfunction() {
   })
 
   const presentscreen = document.getElementById('presentscreendiv');
-  presentscreendiv.addEventListener("click", presentscreenfunc);
-
-  function presentscreenfunc() {
-
-    const mynewPeer = new Peer(undefined, {
-      host: 'peerjs-videoclone.herokuapp.com',
-      secure: true,
-      port: '443'
-    })
-  
+  // presentscreendiv.addEventListener("click", presentscreenfunc);
 
 
-  navigator.mediaDevices.getDisplayMedia({video:true}).then(stream=>{
+
+  let presentationpeers = {};
+  let presentationstream;
+
+
+
+
+
+  async function presentscreenfunc() {
+
+    // const mynewPeer = new Peer(undefined, {
+    //   host: 'peerjs-videoclone.herokuapp.com',
+    //   secure: true,
+    //   port: '443'
+    // })
+    presenting = true;
+    try{
+      presentationscreen = await navigator.mediaDevices.getDisplayMedia();
+      
+    }
+    catch(err){
+      console.log(console.err)
+    }
+    changetopresenatation();
+    // navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{
+
+    //   let videotrack = stream.getVideoTracks()[0];
+    //   for (var key in connectedpeers)
+    //   {
+    //     let sender = connectedpeers[key].peerConnection.getSenders().find(function(s){
+    //       return s.track.kind == videotrack.kind
+    //     })
+    //     sender.replaceTrack(videotrack)
+    //   }
+    //   let sender = myPeer.getSenders().find(function(s){
+    //     return s.track.kind == videotrack.kind
+    //   })
+    //   sender.replaceTrack(videotrack)
+
     // console.log(stream)
-    let video1 = document.createElement('video')
-    addeventtoenlargevideo(video1)
-    addvideo(video1,stream);
-    mynewPeer.on("call",call=>{
-      console.log("called")
-      console.log(stream)
-      call.answer(stream);
-    })
-  }).catch(err=>{console.log(err)})
+    // let video1 = document.createElement('video')
+    // addeventtoenlargevideo(video1)
+    // addvideo(video1,stream);
+    // mynewPeer.on("call",call=>{
+    //   console.log("called")
+    //   console.log(stream)
+    //   call.answer(stream);
+    //   presentationpeers[call.peer] = call;
+    // })
+
+    // })
+
+    // navigator.mediaDevices.getDisplayMedia().then(stream1=>{
+
+    //   let videotrack = stream1.getVideoTracks()[0];
+    //   for (var key in presentationpeers)
+    //   {
+    //     let sender = presentationpeers[key].peerConnection.getSenders().find(function(s){
+    //       return s.track.kind == videotrack.kind
+    //     })
+    //     sender.replaceTrack(videotrack)
+    //   }
+
+    // })
 
 
-  
-    mynewPeer.on("open",()=>{socket.emit('join-meeting', meetingId, mynewPeer.id, `${name} (Presentation)`, profilephoto, 100)})
+
+
+
+    // mynewPeer.on("open",()=>{socket.emit('join-meeting', meetingId, mynewPeer.id, `${name} (Presentation)`, profilephoto, 100)})
+
+  }
+
+
+  function changetopresenatation() {
+
+
+    console.log(presentationstream)
+    let videotrack = presentationstream.getVideoTracks()[0];
+    for (var key in connectedpeers) {
+      let sender = connectedpeers[key].peerConnection.getSenders().find(function (s) {
+        return s.track.kind == videotrack.kind
+      })
+      sender.replaceTrack(videotrack)
+    }
+
+
+  }
 
 
 
 
-
-
-
-}
 
 }

@@ -2,6 +2,9 @@ body{
 margin: 0px;
 }
 
+.h6{
+    margin-bottom: 0px;
+}
 .main_app{
 display: flex;
 height: 100vh;
@@ -39,9 +42,9 @@ height: 100vh;
     height: 100%;
     width: 100%;
     grid-template-columns: repeat(3,minmax(300px,1fr));
-    grid-auto-rows: 210px;
+    grid-auto-rows: 220px;
     grid-column-gap:5px;
-    grid-row-gap:5px;
+    grid-row-gap:10px;
    
   
 }
@@ -49,11 +52,17 @@ height: 100vh;
 video {
     /* width: auto; */
     width: 100%;
-    height: 100%;
+    height: 94%;
+    display: block;
     object-fit: cover;
     background-color: white;
     justify-self: center;
     align-self: center;
+}
+
+.videoname{
+    color: white;
+    text-align: center;
 }
 
 .large-video{
