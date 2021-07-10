@@ -34,6 +34,10 @@ app.get('/join/:room',(req,res)=>{
     res.render(__dirname+'/front_end/room.ejs',{meetingId:req.params.room})
 })
 
+app.get('/chat/:room',(req,res)=>{
+    res.render(__dirname+'/front_end/chatroom.ejs',{meetingId:req.params.room})
+})
+
 // app.post("/",(req,res)=>{
 //     res.render(__dirname + "/front_end/intro_page.ejs",{newmeetingId:uuidV4()})
 //     // res.send(uuidV4())

@@ -35,6 +35,17 @@
     display: none;
 }
 
+
+.signupbutton {
+    background-color: #007bff;
+    border: 1px #007bff solid;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: bold;
+    color: white;
+    font-size: 13px;
+}
+
 .profilephoto{
     border-radius: 50%;
     height: 40px;
@@ -50,7 +61,7 @@
     height: 40vh;
     justify-content: center;
     align-items: flex-end;
-    width: 60%;
+    width: 75%;
     margin: auto;
     padding-bottom: 10px ;
 }
@@ -64,8 +75,19 @@ margin-left: 20px;
 height: 40px;
 border-radius: 4px;
 text-align: center;
+width: 35vw;
 }
 
+#new-meeting{
+    margin-left: 20px;
+}
+
+#existing-meeting{
+    margin-left: 8px;
+}
+#existing-meeting-chat{
+    margin-left: 8px;
+}
 
 .join-meeting{
     display: flex;

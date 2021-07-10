@@ -1,0 +1,77 @@
+body{
+    background-color: black;
+}
+#main__app{
+    margin: 0;
+    height: 100vh;
+}
+#main_chatapp{
+    display: flex;
+    height: 90%;
+    flex-direction: column;
+    width: 80%;
+    margin: auto;
+}
+#messages{
+    flex: 0.9;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 98%;
+}
+#sendmessage{
+    flex: 0.1;
+    text-align: center;
+    padding: 10px;
+}
+
+div#heading {
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-size: 27px;
+    padding: 10px;
+    font-family: sans-serif;
+    font-weight: 700;
+}
+input#messagetext {
+    width: 90%;
+    outline: none;
+    padding: 5px;
+    border: 0px;
+    font-size: 15px;
+    border-bottom: 1px grey solid;
+    margin-right: 14px;
+}
+
+.sender_name{
+    padding: 5px 15px 3px;
+    font-size: 17px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bold;
+    text-align: right;
+}
+
+.sender_name span{
+    color: grey;
+    font-size: 10px;
+    padding: 5px;
+}
+
+.sender_message{
+    padding: 0px 15px 5px;
+    font-size: 14px;
+    /* text-overflow: ellipsis; */
+    word-break: break-word;
+    white-space: initial;
+    text-align: right;
+    /* max-width: 80%; */
+}
+
+button#messagebtn {
+    border-radius: 50%;
+    color: white;
+    background-color: rgb(66,133,244);
+    padding-top: 6px;
+    border: rgb(66,133,244) 1px solid;
+}
+

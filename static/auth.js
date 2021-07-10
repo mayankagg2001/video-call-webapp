@@ -57,6 +57,7 @@ signinbutton.addEventListener("click",()=>{
           console.log(user)
           const {name,email,photourl,uid} = userobjectinfo(user)
           signinbutton.style.backgroundImage = `url(${photourl})`
+          signinbutton.classList.remove("signupbutton")
           signinbutton.classList.add("profilephoto")
           signinbutton.innerHTML = ""
           if(newmeetingId)
@@ -79,6 +80,7 @@ signinbutton.addEventListener("click",()=>{
           console.log("signedout")
           Googleuser = null
           signinbutton.classList.remove("profilephoto")
+          signinbutton.classList.add("signupbutton")
           signinbutton.style.backgroundImage = "none"
           signinbutton.innerHTML = "Sign In"
           signedin = false

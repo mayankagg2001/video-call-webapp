@@ -11,7 +11,7 @@ var firebaseConfig = {
 };
 
 
-const base_url = "https://video-app-clone.herokuapp.com/";
+const base_url = "http://localhost:3000/";
 
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore()
@@ -26,7 +26,7 @@ let admin = false
 let adminuid
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    console.log(userobjectinfo(user))
+    // console.log(userobjectinfo(user))
     let userobj = userobjectinfo(user)
     name = userobj.name
     email = userobj.email
@@ -39,7 +39,7 @@ firebase.auth().onAuthStateChanged((user) => {
           document.getElementById("main__page").classList.remove("hide")
           adminuid = result.data().adminuid
           if (adminuid == uid) admin = true
-          console.log(admin)
+          // console.log(admin)
           superfunction()
         }
         else {
@@ -107,14 +107,14 @@ function superfunction() {
     video: true,
     audio: true,
   }).then(stream => {
-    addvideo(myvideo, stream,"You",true)
+    addvideo(myvideo, stream, "You", true)
     videostream = stream
     myPeer.on("call", call => {
       call.answer(stream);
       const video = document.createElement('div')
       addeventtoenlargevideo(video)
       call.on("stream", userstream => {
-        addvideo(video, userstream,peeridname[call.peer])
+        addvideo(video, userstream, peeridname[call.peer])
         peerstreams[call.peer] = userstream
       })
       connectedpeers[call.peer] = call
@@ -126,7 +126,7 @@ function superfunction() {
 
       console.log("connecting to ", name);
       constructparticipantlist(userlist)
-      setTimeout(() => { connecttouser(userId, stream,name) }, 500)
+      setTimeout(() => { connecttouser(userId, stream, name) }, 500)
     })
 
 
@@ -188,12 +188,12 @@ function superfunction() {
     })
   }
 
-  function addvideo(video, stream,name,mute=false) {
+  function addvideo(video, stream, name, mute = false) {
     let video1 = document.createElement('video')
     video1.srcObject = stream
     const nameobject = document.createElement('div');
     nameobject.innerHTML = `<h6>${name}</h6>`
-    nameobject.setAttribute("class","videoname")
+    nameobject.setAttribute("class", "videoname")
     video1.muted = mute
     video.innerHTML = ""
     video1.addEventListener("loadedmetadata", () => {
@@ -204,18 +204,18 @@ function superfunction() {
     // const gridcell = document.createElement('div');
     // gridcell.append(video)
     // gridcell.append(nameobject)
-    video.setAttribute("class","uservideosdiv")
+    video.setAttribute("class", "uservideosdiv")
     videoGrid.append(video)
   }
 
-  function connecttouser(userId, stream,name) {
+  function connecttouser(userId, stream, name) {
     const call = myPeer.call(userId, stream)
     const video = document.createElement('div')
     addeventtoenlargevideo(video)
     console.log(userId)
     call.on('stream', (userstream) => {
       console.log("here")
-      addvideo(video, userstream,name)
+      addvideo(video, userstream, name)
       // console.log(userstream)
       peerstreams[userId] = userstream
 
@@ -308,26 +308,65 @@ function superfunction() {
   //   }
   // })
 
-  const button = document.getElementById("input")
-  button.addEventListener("submit", (e) => {
+  // const button = document.getElementById("input")
+  // button.addEventListener("submit", (e) => {
+  //   e.preventDefault()
+  //   let message = document.getElementById("messagetext").value
+  //   if (message.length != 0) {
+  //     document.getElementById("messagetext").value = "";
+  //     console.log(message);
+  //     socket.emit("send-message", message)
+  //   }
+  // })
+
+
+  db.collection("rooms").doc(meetingId).collection('messages').orderBy("time", "asc").onSnapshot((snapshot) => {
+    document.getElementById("messages").innerHTML = ""
+    snapshot.docs.map((doc) => addChat(doc.data()))
+  })
+
+  const input = document.getElementById("input")
+  input.addEventListener("submit", (e) => {
     e.preventDefault()
     let message = document.getElementById("messagetext").value
+    let chatname = name;
+    // if(admin) chatname = `${name}:(admin)`
+    // else chatname = name
+    let d = new Date();
+    let h = d.getHours();
+    let m = d.getMinutes();
+    let time;
+    if (h < 10 && m < 10)
+      time = `0${h}:0${m}`
+    else if (h > 10 && m < 10)
+      time = `${h}:0${m}`
+    else
+      time = `${h}:${m}`
+    let timestamp = d.getTime();
     if (message.length != 0) {
       document.getElementById("messagetext").value = "";
-      console.log(message);
-      socket.emit("send-message", message)
+      db.collection('rooms').doc(meetingId).collection('messages').add({
+        message: message,
+        name: chatname,
+        profilephoto: profilephoto,
+        time: timestamp,
+        currenttime: time,
+        uid: uid
+      })
     }
   })
 
-  socket.on("new-message", (message, Sendername) => {
-    console.log(Sendername, " send the message ", message);
-    addChat(Sendername, message)
-  })
 
-  socket.on("my-message", (message) => {
-    console.log("You send the message ", message);
-    addChat("You", message)
-  })
+
+  // socket.on("new-message", (message, Sendername) => {
+  //   console.log(Sendername, " send the message ", message);
+  //   addChat(Sendername, message)
+  // })
+
+  // socket.on("my-message", (message) => {
+  //   console.log("You send the message ", message);
+  //   addChat("You", message)
+  // })
 
   socket.on("mute-yourself", () => {
     mute(videostream)
@@ -341,21 +380,34 @@ function superfunction() {
 
   })
 
-  function addChat(name, message) {
+  function addChat(object) {
     const nameele = document.createElement('div')
     const messagele = document.createElement('div')
     const chatele = document.createElement('div')
-    const d = new Date()
-    let curhour = d.getHours()
-    let curmin = d.getMinutes()
-    nameele.innerHTML = `${name} <span>  ${curhour}:${curmin} </span>`
-    messagele.innerHTML = message
+    nameele.innerHTML = `${object.name} <span>  ${object.currenttime} </span>`
+    messagele.innerHTML = object.message
     nameele.classList.add('sender_name')
     messagele.classList.add('sender_message')
     chatele.append(nameele)
     chatele.append(messagele)
     document.getElementById("messages").append(chatele)
   }
+
+  // function addChat(name, message) {
+  //   const nameele = document.createElement('div')
+  //   const messagele = document.createElement('div')
+  //   const chatele = document.createElement('div')
+  //   const d = new Date()
+  //   let curhour = d.getHours()
+  //   let curmin = d.getMinutes()
+  //   nameele.innerHTML = `${name} <span>  ${curhour}:${curmin} </span>`
+  //   messagele.innerHTML = message
+  //   nameele.classList.add('sender_name')
+  //   messagele.classList.add('sender_message')
+  //   chatele.append(nameele)
+  //   chatele.append(messagele)
+  //   document.getElementById("messages").append(chatele)
+  // }
 
   const participantbutton = document.getElementById("participants")
   const participantlist = document.getElementById("participantlist")
@@ -383,8 +435,7 @@ function superfunction() {
 
     peeridname = {}
 
-    for(let i=0;i<userinfo.length;i++)
-    {
+    for (let i = 0; i < userinfo.length; i++) {
       peeridname[userinfo[i].id] = userinfo[i].name
     }
 
@@ -438,11 +489,11 @@ function superfunction() {
     //   port: '443'
     // })
     presenting = true;
-    try{
+    try {
       presentationscreen = await navigator.mediaDevices.getDisplayMedia();
-      
+
     }
-    catch(err){
+    catch (err) {
       console.log(console.err)
     }
     changetopresenatation();
