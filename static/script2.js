@@ -107,8 +107,7 @@ function superfunction() {
     video: true,
     audio: {
       echoCancellation:true,
-      sampleSize:16
-    },
+    }
   }).then(stream => {
     addvideo(myvideo, stream, "You", true)
     videostream = stream
