@@ -10,7 +10,7 @@ var firebaseConfig = {
 };
 
 
-const base_url = "http://localhost:3000/";
+const base_url = "https://video-meet-webapp.herokuapp.com/";
 
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore()
