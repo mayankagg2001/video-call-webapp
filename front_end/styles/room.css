@@ -55,7 +55,7 @@ video {
     height: 94%;
     display: block;
     object-fit: cover;
-    background-color: white;
+    background-color: rgba(59, 60, 61,1);
     justify-self: center;
     align-self: center;
 }
@@ -173,6 +173,14 @@ div#chatmessages:hover{
     
 }
 
+#muteall, #closevideoall {
+    color: white;
+    background-color: black;
+    border: 2px black solid;
+    border-radius: 7px;
+    padding: 5px;
+}
+
 #audio , #video , #endcall{
     border-radius: 50%;
     color: black;
@@ -186,6 +194,9 @@ div#chatmessages:hover{
     cursor: pointer;
     padding-top: 19px
 }
+
+
+
 
 #single-participant{
     display: flex;
@@ -219,7 +230,7 @@ div#chatmessages:hover{
 }
 
 .sender_message{
-    padding: 0px 15px 5px;
+    padding: 0px 18px 5px;
     font-size: 14px;
     word-break: break-word;
     white-space: initial;
@@ -258,4 +269,40 @@ span.material-icons {
 
 .shaded{
     background-color: rgba(189, 187, 187, 0.8);
+}
+
+#main_app_left_videos::-webkit-scrollbar {
+    
+    background-color: white;
+    border-radius: 5px;
+    width: 5px;
+}
+
+#main_app_left_videos::-webkit-scrollbar-thumb{
+    background-color: black;
+    border-radius: 5px;
+    width: 5px;
+}
+
+#main_app_left_videos::-webkit-scrollbar-track {
+    background-color: white;
+    width: 5px;
+}
+
+#middleblock::-webkit-scrollbar {
+    
+    background-color: white;
+    border-radius: 5px;
+    width: 5px;
+}
+
+#middleblock::-webkit-scrollbar-thumb{
+    background-color: rgba(189, 187, 187, 0.8);
+    border-radius: 5px;
+    width: 6px;
+}
+
+#middleblock::-webkit-scrollbar-track {
+    background-color: white;
+    width: 5px;
 }

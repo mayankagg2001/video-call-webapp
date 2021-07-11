@@ -109,3 +109,12 @@ width: 35vw;
     font-size: 14px;
     color: rgb(212, 76, 76);
 }
+
+button#copy-new-meeting {
+    color: white;
+    background-color: #007bff;
+    border: 2px #007bff solid;
+    border-radius: 4px;
+    font-weight: 600;
+    padding: 4px;
+}

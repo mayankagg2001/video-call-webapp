@@ -105,7 +105,10 @@ function superfunction() {
 
   navigator.mediaDevices.getUserMedia({
     video: true,
-    audio: true,
+    audio: {
+      echoCancellation:true,
+      sampleSize:16
+    },
   }).then(stream => {
     addvideo(myvideo, stream, "You", true)
     videostream = stream
@@ -268,7 +271,7 @@ function superfunction() {
   })
 
   if (admin == false) {
-    console.log("admin is false")
+    // console.log("admin is false")
     document.getElementById("mutealldiv").style.display = "none"
     document.getElementById("closevideoalldiv").style.display = "none"
   }
@@ -282,6 +285,21 @@ function superfunction() {
     })
 
   }
+
+
+  document.getElementById("sharemeetdiv").addEventListener("click",()=>{
+    const textarea = document.createElement('input')
+    textarea.value = `Meeting Code : ${meetingId}
+    Meeting url: ${base_url}join/${meetingId}
+    Chatroom url: ${base_url}chat/${meetingId}`
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+    alert("Meeting info successfully copied")
+    // console.log(textarea)
+  })
+
   function mute(video) {
     video.getAudioTracks()[0].enabled = false;
   }

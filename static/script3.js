@@ -79,7 +79,7 @@ function superfunction() {
     if(object.uid==uid)
     {
       nameele.style.textAlign = "left";
-      messagele.style.textAlign = "left";
+      messagele.style.float = "left";
     }
     chatele.append(nameele)
     chatele.append(messagele)
@@ -102,7 +102,7 @@ function superfunction() {
     else if(h>10 && m<10)
     time = `${h}:0${m}`
     else
-    time = `${h}:{m}`
+    time = `${h}:${m}`
     let timestamp = d.getTime();
     if (message.length != 0) {
       document.getElementById("messagetext").value = "";
@@ -116,4 +116,20 @@ function superfunction() {
       })
     }
   })
+
+
+  document.getElementById("sharemeet").addEventListener("click",()=>{
+    const textarea = document.createElement('input')
+    textarea.value = `Meeting Code : ${meetingId}
+    Meeting url: ${base_url}join/${meetingId}
+    Chatroom url: ${base_url}chat/${meetingId}`
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+    alert("Meeting info successfully copied")
+    // console.log(textarea)
+  })
+
+
 }

@@ -1,27 +1,59 @@
 body{
     background-color: black;
 }
+
+::-webkit-scrollbar {
+    
+    background-color: white;
+    border-radius: 7px;
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: white;
+    border-radius: 7px;
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: rgba(18, 17, 17,0.95);
+    width: 5px;
+}
+
 #main__app{
     margin: 0;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 #main_chatapp{
     display: flex;
     height: 90%;
     flex-direction: column;
-    width: 80%;
+    width: 100%;
     margin: auto;
+    flex: 0.9;
+    background-color: rgba(18, 17, 17,0.95)
 }
 #messages{
     flex: 0.9;
-    overflow-y: auto;
+    /* overflow-y: auto; */
     overflow-x: hidden;
-    width: 98%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 #sendmessage{
     flex: 0.1;
     text-align: center;
-    padding: 10px;
+    /* padding: 10px; */
+    
+}
+
+#input{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 div#heading {
@@ -32,15 +64,17 @@ div#heading {
     padding: 10px;
     font-family: sans-serif;
     font-weight: 700;
+    flex: 0.1;
 }
 input#messagetext {
-    width: 90%;
+    width: 75%;
     outline: none;
-    padding: 5px;
+    padding: 5px 12px 5px;
     border: 0px;
     font-size: 15px;
     border-bottom: 1px grey solid;
     margin-right: 14px;
+    border-radius: 10px;
 }
 
 .sender_name{
@@ -49,6 +83,7 @@ input#messagetext {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-weight: bold;
     text-align: right;
+    color: white;
 }
 
 .sender_name span{
@@ -57,21 +92,32 @@ input#messagetext {
     padding: 5px;
 }
 
-.sender_message{
-    padding: 0px 15px 5px;
+.sender_message {
+    padding: 1px 15px 1px;
     font-size: 14px;
-    /* text-overflow: ellipsis; */
+    font-family: sans-serif;
     word-break: break-word;
     white-space: initial;
-    text-align: right;
-    /* max-width: 80%; */
+    float: right;
+    width: fit-content;
+    max-width: 50%;
+    background-color: white;
+    margin: 3px 20px 3px;
+    border-radius: 10px;
 }
 
 button#messagebtn {
     border-radius: 50%;
     color: white;
     background-color: rgb(66,133,244);
-    padding-top: 6px;
+    padding-top: 2px;
     border: rgb(66,133,244) 1px solid;
+    outline: none;
 }
 
+span.material-icons {
+    float: right;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 22px;
+}
