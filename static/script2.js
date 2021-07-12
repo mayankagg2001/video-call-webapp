@@ -1,6 +1,6 @@
 import userobjectinfo from "./userObject.js"
 
-
+// Initializing Firebase webapp
 var firebaseConfig = {
   apiKey: "AIzaSyDamobTihmwkpxxCVSb59-yUOMwpkiEoNI",
   authDomain: "video-call-app-copy.firebaseapp.com",
@@ -24,9 +24,14 @@ let profilephoto
 let uid
 let admin = false
 let adminuid
+
+// Checking the current state of authentication
+// If user is signed in Then check connect to meeting if meeting exist else direct back to the homepage
+// If user is not signed in take him back to the homepage 
+
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    // console.log(userobjectinfo(user))
+
     let userobj = userobjectinfo(user)
     name = userobj.name
     email = userobj.email
@@ -35,11 +40,10 @@ firebase.auth().onAuthStateChanged((user) => {
     db.collection('rooms').doc(meetingId).get().then(
       (result) => {
         if (result.exists) {
-          console.log("exist")
+
           document.getElementById("main__page").classList.remove("hide")
           adminuid = result.data().adminuid
           if (adminuid == uid) admin = true
-          // console.log(admin)
           superfunction()
         }
         else {
@@ -48,12 +52,9 @@ firebase.auth().onAuthStateChanged((user) => {
         }
       }
     )
-    // var q = roomref.where("meetingid","==",meetingId)
-    // console.log(roomref);
 
   }
   else {
-    console.log("not signed in")
     alert("Please sign in to continue")
     window.location.href = base_url;
   }
@@ -67,25 +68,15 @@ firebase.auth().onAuthStateChanged((user) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function superfunction() {
+
 
 
   const socket = io('/')
   const videoGrid = document.getElementById('video-grid')
+  
+  // Initialized peer using javascript peerjs library. 
+  
   const myPeer = new Peer(undefined, {
     host: 'peerjs-videoclone.herokuapp.com',
     secure: true,
@@ -103,14 +94,22 @@ function superfunction() {
   let peerstreams = {}
   let peeridname = {}
 
+
+  // Capturing webcam video and audio using getUserMedia and then sending it to the other participants 
+
   navigator.mediaDevices.getUserMedia({
     video: true,
     audio: {
-      echoCancellation:true,
+      echoCancellation: true,
     }
   }).then(stream => {
+
+    // Adding our own video to the screen with audio muted
     addvideo(myvideo, stream, "You", true)
     videostream = stream
+
+    // When some peer make calls (In case you are newly connected participant every other participant of the meeting calls you) 
+    // you answer the call and along with that also sends your video and audio to the caller
     myPeer.on("call", call => {
       call.answer(stream);
       const video = document.createElement('div')
@@ -124,9 +123,11 @@ function superfunction() {
         video.remove();
       })
     })
+
+    // When new particiapnt is connected we make a call to the new participant 
+    // and also reconstruct the participant list
     socket.on('user-connected', (userId, name, profilephoto, userlist) => {
 
-      console.log("connecting to ", name);
       constructparticipantlist(userlist)
       setTimeout(() => { connecttouser(userId, stream, name) }, 500)
     })
@@ -136,59 +137,47 @@ function superfunction() {
   })
 
 
+  // When participant is disconnected close the connection with that participant
 
   socket.on('user-disconnected', (userId, name, profilephoto, userlist) => {
-    // console.log("user disconnected ", userId)
-    // console.log(name, " left the meeting")
+
     constructparticipantlist(userlist)
-    // console.log(userlist)
+
     if (connectedpeers[userId]) {
       connectedpeers[userId].close();
       delete connectedpeers.userId
     }
   })
 
-  myPeer.on("open", id => {
-    // console.log(name)
+  // As soon as our Peer is initialized we send the message to the meeting that we are connected
 
-    // db.collection('rooms').doc(meetingId).update({
-    //   participants:firebase.firestore.FieldValue.arrayUnion({
-    //     name:name,
-    //     userid:id,
-    //     profilephoto:profilephoto
-    //   })
-    // })
+  myPeer.on("open", id => {
+
     socket.emit('join-meeting', meetingId, id, name, profilephoto, uid)
   })
 
-  // socket.on("disconnect-yourself",function(){
-  //       db.collection('rooms').doc(meetingId).update({
-  //       participants:firebase.firestore.FieldValue.arrayRemove({
-  //         name:name,
-  //         userid:myPeer.id,
-  //         profilephoto:profilephoto
-  //       })
-  //     })
-  //   }
-  //   )
+
+  // It gives us the participant list which we use to construct the current participant list
 
   socket.on("You-are-connected", userlist => {
     constructparticipantlist(userlist)
-    // console.log(userlist);
+
   })
 
+  // Function to enlarge the video on which we click
 
   function addeventtoenlargevideo(video) {
     video.addEventListener('click', () => {
       video.classList.toggle('large-video')
       const videos = document.getElementsByClassName('uservideosdiv');
       for (let i = 0; i < videos.length; i++) {
-        console.log(videos[i])
         if (videos[i] == video) continue
         videos[i].classList.remove('large-video')
       }
     })
   }
+
+  // Function to add add video to the screen 
 
   function addvideo(video, stream, name, mute = false) {
     let video1 = document.createElement('video')
@@ -203,22 +192,23 @@ function superfunction() {
     })
     video.append(video1)
     video.append(nameobject)
-    // const gridcell = document.createElement('div');
-    // gridcell.append(video)
-    // gridcell.append(nameobject)
+
     video.setAttribute("class", "uservideosdiv")
     videoGrid.append(video)
   }
+
+  // Function to make call to new participant and send it our stream
+  // and add the stream returned by it to the screen 
 
   function connecttouser(userId, stream, name) {
     const call = myPeer.call(userId, stream)
     const video = document.createElement('div')
     addeventtoenlargevideo(video)
-    console.log(userId)
+
     call.on('stream', (userstream) => {
-      console.log("here")
+
       addvideo(video, userstream, name)
-      // console.log(userstream)
+
       peerstreams[userId] = userstream
 
     })
@@ -232,7 +222,10 @@ function superfunction() {
   }
 
 
-
+  // videobtn -> button to handle our on/off cam
+  // audiobtn -> button to handle mute/unmute our audio
+  // muteallbtn-> (only accessible to admin) used to mute every other participant in the meeting
+  // videooff -> (only accessible to the admin) used to close video of every other participant in the meeting
 
   const videobtn = document.getElementById('video')
   const audiobtn = document.getElementById('audio')
@@ -265,12 +258,14 @@ function superfunction() {
   })
 
   document.getElementById("endcall").addEventListener("click", () => {
-    // socket.emit("disconnect");
+
     window.location.href = base_url;
   })
 
+  // if participant is not admin than muteall and close call video buttons should not be there
+
   if (admin == false) {
-    // console.log("admin is false")
+
     document.getElementById("mutealldiv").style.display = "none"
     document.getElementById("closevideoalldiv").style.display = "none"
   }
@@ -286,7 +281,9 @@ function superfunction() {
   }
 
 
-  document.getElementById("sharemeetdiv").addEventListener("click",()=>{
+  // To share the meeting ID , meeting Url, meeting chat url
+
+  document.getElementById("sharemeetdiv").addEventListener("click", () => {
     const textarea = document.createElement('input')
     textarea.value = `Meeting Code : ${meetingId}
     Meeting url: ${base_url}join/${meetingId}
@@ -296,59 +293,50 @@ function superfunction() {
     document.execCommand('copy')
     document.body.removeChild(textarea)
     alert("Meeting info successfully copied")
-    // console.log(textarea)
   })
+
+  // To mute ourself
 
   function mute(video) {
     video.getAudioTracks()[0].enabled = false;
   }
 
+  // To unmute ourself
+
   function unmute(video) {
     video.getAudioTracks()[0].enabled = true;
   }
+
+  // To open our video
 
   function openvideo(video) {
     video.getVideoTracks()[0].enabled = true;
   }
 
+  // To close our video
+
   function closevideo(video) {
     video.getVideoTracks()[0].enabled = false;
   }
 
-  // allvideobtn.addEventListener("click",()=>{
-  //   for (let key in peerstreams)
-  //   {
-  //     let stream1 = peerstreams[key]
-  //     let on = stream1.getVideoTracks()[0].enabled
-  //     if(on)
-  //       stream1.getVideoTracks()[0].enabled = false
-  //   }
-  // })
 
-  // const button = document.getElementById("input")
-  // button.addEventListener("submit", (e) => {
-  //   e.preventDefault()
-  //   let message = document.getElementById("messagetext").value
-  //   if (message.length != 0) {
-  //     document.getElementById("messagetext").value = "";
-  //     console.log(message);
-  //     socket.emit("send-message", message)
-  //   }
-  // })
 
+
+  // Retrieving messages from the firestore database from specefic meeting Id 
+  // Then adding these messages to the screen of the user
 
   db.collection("rooms").doc(meetingId).collection('messages').orderBy("time", "asc").onSnapshot((snapshot) => {
     document.getElementById("messages").innerHTML = ""
     snapshot.docs.map((doc) => addChat(doc.data()))
   })
 
+  // user sending new messages are saved in the firestore database
+
   const input = document.getElementById("input")
   input.addEventListener("submit", (e) => {
     e.preventDefault()
     let message = document.getElementById("messagetext").value
     let chatname = name;
-    // if(admin) chatname = `${name}:(admin)`
-    // else chatname = name
     let d = new Date();
     let h = d.getHours();
     let m = d.getMinutes();
@@ -375,16 +363,6 @@ function superfunction() {
 
 
 
-  // socket.on("new-message", (message, Sendername) => {
-  //   console.log(Sendername, " send the message ", message);
-  //   addChat(Sendername, message)
-  // })
-
-  // socket.on("my-message", (message) => {
-  //   console.log("You send the message ", message);
-  //   addChat("You", message)
-  // })
-
   socket.on("mute-yourself", () => {
     mute(videostream)
     document.getElementById("audio").innerHTML = '<span class="material-icons">mic_off</span>'
@@ -397,11 +375,17 @@ function superfunction() {
 
   })
 
+
+  // Function to construct chat element from message objects we get from the database
+
   function addChat(object) {
     const nameele = document.createElement('div')
     const messagele = document.createElement('div')
     const chatele = document.createElement('div')
-    nameele.innerHTML = `${object.name} <span>  ${object.currenttime} </span>`
+    let name
+    if(object.uid==uid) name = "You"
+    else name = object.name
+    nameele.innerHTML = `${name} <span>  ${object.currenttime} </span>`
     messagele.innerHTML = object.message
     nameele.classList.add('sender_name')
     messagele.classList.add('sender_message')
@@ -410,21 +394,6 @@ function superfunction() {
     document.getElementById("messages").append(chatele)
   }
 
-  // function addChat(name, message) {
-  //   const nameele = document.createElement('div')
-  //   const messagele = document.createElement('div')
-  //   const chatele = document.createElement('div')
-  //   const d = new Date()
-  //   let curhour = d.getHours()
-  //   let curmin = d.getMinutes()
-  //   nameele.innerHTML = `${name} <span>  ${curhour}:${curmin} </span>`
-  //   messagele.innerHTML = message
-  //   nameele.classList.add('sender_name')
-  //   messagele.classList.add('sender_message')
-  //   chatele.append(nameele)
-  //   chatele.append(messagele)
-  //   document.getElementById("messages").append(chatele)
-  // }
 
   const participantbutton = document.getElementById("participants")
   const participantlist = document.getElementById("participantlist")
@@ -446,9 +415,10 @@ function superfunction() {
 
 
 
+ // Function to construct participant list element and display on the screen
+ // using userinfo which contains current participant information
 
-
-  function constructparticipantlist(userinfo) { //console.log(userinfo)
+  function constructparticipantlist(userinfo) {
 
     peeridname = {}
 
@@ -477,109 +447,11 @@ function superfunction() {
     }
   }
 
-  // db.collection('rooms').doc(meetingId).onSnapshot(doc=>{
-  //   constructparticipantlist(doc.data().participants)
-  //   console.log(doc.data().participants)
-  // })
+
   const chatmessageswitch = document.getElementById("chatmessagediv")
   chatmessageswitch.addEventListener("click", () => {
     document.getElementById("main_app_right").classList.toggle("hide")
   })
-
-  const presentscreen = document.getElementById('presentscreendiv');
-  // presentscreendiv.addEventListener("click", presentscreenfunc);
-
-
-
-  let presentationpeers = {};
-  let presentationstream;
-
-
-
-
-
-  async function presentscreenfunc() {
-
-    // const mynewPeer = new Peer(undefined, {
-    //   host: 'peerjs-videoclone.herokuapp.com',
-    //   secure: true,
-    //   port: '443'
-    // })
-    presenting = true;
-    try {
-      presentationscreen = await navigator.mediaDevices.getDisplayMedia();
-
-    }
-    catch (err) {
-      console.log(console.err)
-    }
-    changetopresenatation();
-    // navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{
-
-    //   let videotrack = stream.getVideoTracks()[0];
-    //   for (var key in connectedpeers)
-    //   {
-    //     let sender = connectedpeers[key].peerConnection.getSenders().find(function(s){
-    //       return s.track.kind == videotrack.kind
-    //     })
-    //     sender.replaceTrack(videotrack)
-    //   }
-    //   let sender = myPeer.getSenders().find(function(s){
-    //     return s.track.kind == videotrack.kind
-    //   })
-    //   sender.replaceTrack(videotrack)
-
-    // console.log(stream)
-    // let video1 = document.createElement('video')
-    // addeventtoenlargevideo(video1)
-    // addvideo(video1,stream);
-    // mynewPeer.on("call",call=>{
-    //   console.log("called")
-    //   console.log(stream)
-    //   call.answer(stream);
-    //   presentationpeers[call.peer] = call;
-    // })
-
-    // })
-
-    // navigator.mediaDevices.getDisplayMedia().then(stream1=>{
-
-    //   let videotrack = stream1.getVideoTracks()[0];
-    //   for (var key in presentationpeers)
-    //   {
-    //     let sender = presentationpeers[key].peerConnection.getSenders().find(function(s){
-    //       return s.track.kind == videotrack.kind
-    //     })
-    //     sender.replaceTrack(videotrack)
-    //   }
-
-    // })
-
-
-
-
-
-    // mynewPeer.on("open",()=>{socket.emit('join-meeting', meetingId, mynewPeer.id, `${name} (Presentation)`, profilephoto, 100)})
-
-  }
-
-
-  function changetopresenatation() {
-
-
-    console.log(presentationstream)
-    let videotrack = presentationstream.getVideoTracks()[0];
-    for (var key in connectedpeers) {
-      let sender = connectedpeers[key].peerConnection.getSenders().find(function (s) {
-        return s.track.kind == videotrack.kind
-      })
-      sender.replaceTrack(videotrack)
-    }
-
-
-  }
-
-
 
 
 

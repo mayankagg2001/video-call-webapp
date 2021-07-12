@@ -1,5 +1,9 @@
 import userobjectinfo from "./userObject.js"
 
+// CHATROOM FOR CHATING BEFORE AFTER OR DURING THE MEETING
+
+// Initializing the firebase app
+
 var firebaseConfig = {
   apiKey: "AIzaSyDamobTihmwkpxxCVSb59-yUOMwpkiEoNI",
   authDomain: "video-call-app-copy.firebaseapp.com",
@@ -21,6 +25,11 @@ let profilephoto;
 let uid;
 let adminuid;
 let admin = false
+
+
+// Check current state of the authentication
+// If signed in open the chatroom else take user back to home page
+
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
 
@@ -32,11 +41,9 @@ firebase.auth().onAuthStateChanged((user) => {
     db.collection('rooms').doc(meetingId).get().then(
       (result) => {
         if (result.exists) {
-          // console.log("exist")
-          document.getElementById("main__app").classList.remove("hide")
+          document.getElementById("container_app").classList.remove("hide")
           adminuid = result.data().adminuid
           if (adminuid == uid) admin = true
-          // console.log(admin)
           superfunction()
         }
         else {
@@ -51,7 +58,7 @@ firebase.auth().onAuthStateChanged((user) => {
 
   }
   else {
-    console.log("not signed in")
+
     alert("Please sign in to continue")
     window.location.href = base_url;
   }
@@ -60,15 +67,15 @@ firebase.auth().onAuthStateChanged((user) => {
 
 function superfunction() {
 
+  // Retrieving chat messages of the current room
 
   db.collection("rooms").doc(meetingId).collection('messages').orderBy("time", "asc").onSnapshot((snapshot) => {
     document.getElementById("messages").innerHTML = ""
     snapshot.docs.map((doc) => addchat(doc.data()))
   })
 
-
-  function addchat(object)
-  {
+  // Function to create chat element and add it to the display
+  function addchat(object) {
     const nameele = document.createElement('div')
     const messagele = document.createElement('div')
     const chatele = document.createElement('div')
@@ -76,8 +83,7 @@ function superfunction() {
     messagele.innerHTML = object.message
     nameele.classList.add('sender_name')
     messagele.classList.add('sender_message')
-    if(object.uid==uid)
-    {
+    if (object.uid == uid) {
       nameele.style.textAlign = "left";
       messagele.style.float = "left";
     }
@@ -86,6 +92,8 @@ function superfunction() {
     document.getElementById("messages").append(chatele)
   }
 
+
+  // Sending new messages -> adding new messages to the database
   const input = document.getElementById("input")
   input.addEventListener("submit", (e) => {
     e.preventDefault()
@@ -97,12 +105,12 @@ function superfunction() {
     let h = d.getHours();
     let m = d.getMinutes();
     let time;
-    if(h<10 && m<10)
-    time = `0${h}:0${m}`
-    else if(h>10 && m<10)
-    time = `${h}:0${m}`
+    if (h < 10 && m < 10)
+      time = `0${h}:0${m}`
+    else if (h > 10 && m < 10)
+      time = `${h}:0${m}`
     else
-    time = `${h}:${m}`
+      time = `${h}:${m}`
     let timestamp = d.getTime();
     if (message.length != 0) {
       document.getElementById("messagetext").value = "";
@@ -112,13 +120,15 @@ function superfunction() {
         profilephoto: profilephoto,
         time: timestamp,
         currenttime: time,
-        uid:uid
+        uid: uid
       })
     }
   })
 
 
-  document.getElementById("sharemeet").addEventListener("click",()=>{
+  // Copy meeting info -> meeting ID, meeting url , meeting chat url
+
+  document.getElementById("sharemeet").addEventListener("click", () => {
     const textarea = document.createElement('input')
     textarea.value = `Meeting Code : ${meetingId}
     Meeting url: ${base_url}join/${meetingId}
@@ -128,7 +138,6 @@ function superfunction() {
     document.execCommand('copy')
     document.body.removeChild(textarea)
     alert("Meeting info successfully copied")
-    // console.log(textarea)
   })
 
 
