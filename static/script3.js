@@ -70,8 +70,10 @@ function superfunction() {
   // Retrieving chat messages of the current room
 
   db.collection("rooms").doc(meetingId).collection('messages').orderBy("time", "asc").onSnapshot((snapshot) => {
+    let messageselement = document.getElementById("messages")
     document.getElementById("messages").innerHTML = ""
     snapshot.docs.map((doc) => addchat(doc.data()))
+    messageselement.scrollTop = messageselement.scrollHeight
   })
 
   // Function to create chat element and add it to the display
